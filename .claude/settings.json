@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /Users/diasmazhenov/Downloads/md-translate && if [ -n \"$(git status --porcelain)\" ]; then git add -A && git commit -m \"chore: auto-commit $(date +'%Y-%m-%d %H:%M')\" && git push origin main; fi",
+            "timeout": 30,
+            "statusMessage": "Pushing changes to GitHub..."
+          }
+        ]
+      }
+    ]
+  }
+}

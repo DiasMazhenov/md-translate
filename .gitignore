@@ -1,6 +1,6 @@
 .DS_Store
 **/.DS_Store
 __MACOSX/
-.claude/
+.claude/settings.local.json
 *.zip
 node_modules/
