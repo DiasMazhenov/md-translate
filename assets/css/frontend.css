@@ -1,0 +1,168 @@
+/* ============================================================
+   MD-Translate – Frontend Switcher
+   All visual values read from CSS custom properties so they
+   can be overridden from Settings → Switcher / Widget.
+   ============================================================ */
+
+.mdt-switcher {
+    /* ---- tokens (defaults, overridden via inline style or wp_head) ---- */
+    --mdt-font-size:    14px;
+    --mdt-padding:      3px 10px;
+    --mdt-radius:       3px;
+    --mdt-gap:          4px;
+    --mdt-color:        #333;
+    --mdt-bg:           #fff;
+    --mdt-border-color: #d0d5db;
+    --mdt-active-color: #fff;
+    --mdt-active-bg:    #0073aa;
+    --mdt-hover-color:  #fff;
+    --mdt-hover-bg:     #0073aa;
+
+    font-size: var(--mdt-font-size);
+    line-height: 1.5;
+    margin: 12px 0;
+}
+
+/* ================================================================
+   LIST style
+   ================================================================ */
+.mdt-switcher--list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--mdt-gap);
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border: 1px solid #e2e4e7;
+    border-radius: 4px;
+    list-style: none;
+}
+
+.mdt-switcher--list .mdt-switcher__item { margin: 0; }
+
+.mdt-switcher--list .mdt-switcher__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: var(--mdt-padding);
+    border-radius: var(--mdt-radius);
+    border: 1px solid var(--mdt-border-color);
+    background: var(--mdt-bg);
+    color: var(--mdt-color);
+    text-decoration: none;
+    transition: background .15s, color .15s, border-color .15s;
+}
+
+.mdt-switcher--list .mdt-switcher__link:hover {
+    background: var(--mdt-hover-bg);
+    color: var(--mdt-hover-color);
+    border-color: var(--mdt-hover-bg);
+    text-decoration: none;
+}
+
+.mdt-switcher--list .mdt-switcher__item--active .mdt-switcher__link {
+    background: var(--mdt-active-bg);
+    color: var(--mdt-active-color);
+    border-color: var(--mdt-active-bg);
+    cursor: default;
+    pointer-events: none;
+}
+
+/* ================================================================
+   DROPDOWN style
+   ================================================================ */
+.mdt-switcher--dropdown { display: inline-block; }
+
+.mdt-switcher--dropdown .mdt-switcher__select {
+    padding: 5px 10px;
+    font-size: var(--mdt-font-size);
+    border: 1px solid var(--mdt-border-color);
+    border-radius: var(--mdt-radius);
+    background: var(--mdt-bg);
+    color: var(--mdt-color);
+    cursor: pointer;
+}
+
+.mdt-switcher--dropdown .mdt-switcher__select:focus {
+    outline: 2px solid var(--mdt-active-bg);
+    outline-offset: 1px;
+}
+
+/* ================================================================
+   FLAGS style
+   ================================================================ */
+.mdt-switcher--flags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--mdt-gap);
+}
+
+.mdt-switcher__flag-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: var(--mdt-padding);
+    border-radius: var(--mdt-radius);
+    border: 2px solid transparent;
+    background: #f1f3f5;
+    color: var(--mdt-color);
+    text-decoration: none;
+    font-size: var(--mdt-font-size);
+    transition: background .15s, border-color .15s, color .15s;
+}
+
+.mdt-switcher__flag-item:hover {
+    background: var(--mdt-hover-bg);
+    border-color: var(--mdt-hover-bg);
+    color: var(--mdt-hover-color);
+    text-decoration: none;
+}
+
+.mdt-switcher__flag-item--active {
+    background: var(--mdt-active-bg);
+    border-color: var(--mdt-active-bg);
+    color: var(--mdt-active-color);
+    cursor: default;
+    pointer-events: none;
+}
+
+/* ================================================================
+   Shared item parts
+   ================================================================ */
+.mdt-flag {
+    font-size: 1.2em;
+    line-height: 1;
+}
+
+.mdt-lang-code {
+    font-size: .85em;
+    font-weight: 700;
+    letter-spacing: .03em;
+    opacity: .85;
+}
+
+/* Source language icon (translate SVG) */
+.mdt-source-icon {
+    display: inline-block;
+    vertical-align: middle;
+    width: 1em;     /* overridden by inline width attr */
+    height: 1em;
+    /* Inherit color via currentColor — the SVG uses fill="currentColor" */
+    color: inherit;
+}
+
+/* Active source item: tint icon to match active text color */
+.mdt-switcher__item--active .mdt-source-icon,
+.mdt-switcher__flag-item--active .mdt-source-icon {
+    filter: brightness(0) invert(1);  /* white on colored background */
+}
+
+/* ================================================================
+   Loading state
+   ================================================================ */
+.mdt-translating {
+    opacity: .6;
+    pointer-events: none;
+    transition: opacity .2s;
+}
