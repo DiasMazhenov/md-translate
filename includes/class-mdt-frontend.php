@@ -170,12 +170,13 @@ class MDT_Frontend {
 	private function translate_html_safe( $html, $target_lang ) {
 		$source = get_option( 'mdt_source_lang', 'auto' );
 
-		// Pre-pass: extract skip blocks (e.g. language switcher) and replace with placeholders
+		// Pre-pass: extract skip blocks (e.g. language switcher) and replace with
+		// HTML-comment placeholders — comments are skipped by the translation regex (group 2)
 		$skipped = array();
 		$html = preg_replace_callback(
 			'~<!-- mdt-skip-start -->[\s\S]*?<!-- mdt-skip-end -->~',
 			function ( $m ) use ( &$skipped ) {
-				$key            = "\x02MDT_SKIP_" . count( $skipped ) . "\x03";
+				$key            = '<!--MDT_SKIP_' . count( $skipped ) . '-->';
 				$skipped[ $key ] = $m[0];
 				return $key;
 			},
