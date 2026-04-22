@@ -201,33 +201,38 @@ class MDT_Widget extends WP_Widget {
 	 */
 	private static function dropdown_label( $item, $opts ) {
 		if ( $item['is_source'] ) {
-			// Show globe emoji as stand-in for SVG; append name if requested
+			// Show globe emoji as stand-in for SVG
 			$label = '🌐';
+
 			if ( $opts['show_names'] ) {
 				$label .= ' ' . $item['label'];
 			} elseif ( $opts['show_codes'] ) {
-				$label .= ' ORG';
+				// Show source language code (e.g., "RU", "EN", "AUTO")
+				$src_lang = get_option( 'mdt_source_lang', 'auto' );
+				$label .= ' ' . strtoupper( $src_lang );
 			}
 			return $label;
 		}
 
 		$label = '';
 
+		// Add flag emoji only if enabled and available
 		if ( $opts['show_flags'] && $item['flag'] ) {
 			$label .= $item['flag'];
-			// Add separator only if text follows
+			// Add space separator only if text follows
 			if ( $opts['show_names'] || $opts['show_codes'] ) {
 				$label .= ' ';
 			}
 		}
 
+		// Add language name or code
 		if ( $opts['show_names'] ) {
 			$label .= $item['label'];
 		} elseif ( $opts['show_codes'] ) {
 			$label .= strtoupper( $item['code'] );
 		}
 
-		// If nothing was built (show_flags=1 but flag empty, names+codes off) — fallback
+		// Fallback: if all visibility options are off, show language name
 		if ( '' === $label ) {
 			$label = $item['label'];
 		}
