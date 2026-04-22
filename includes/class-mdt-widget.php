@@ -160,20 +160,31 @@ class MDT_Widget extends WP_Widget {
 
 	/**
 	 * Build inner HTML for list / flags items.
-	 * Source item always shows the translate SVG icon instead of a flag.
+	 * Source item shows SVG icon only if show_flags is enabled.
 	 */
 	private static function item_html( $item, $opts ) {
 		$parts = array();
 
 		if ( $item['is_source'] ) {
-			// SVG translate-icon — always shown for the source/original item
-			$icon_size = (int) $opts['icon_size'];
-			$svg_url   = MDT_PLUGIN_URL . 'assets/images/translate-icon.svg';
-			$parts[]   = '<img src="' . esc_url( $svg_url ) . '" '
-				. 'width="' . $icon_size . '" height="' . $icon_size . '" '
-				. 'class="mdt-source-icon" alt="" aria-hidden="true">';
+			// SVG translate-icon — shown for source item only if show_flags enabled
+			if ( $opts['show_flags'] ) {
+				$icon_size = (int) $opts['icon_size'];
+				$svg_url   = MDT_PLUGIN_URL . 'assets/images/translate-icon.svg';
+				$parts[]   = '<img src="' . esc_url( $svg_url ) . '" '
+					. 'width="' . $icon_size . '" height="' . $icon_size . '" '
+					. 'class="mdt-source-icon" alt="" aria-hidden="true">';
+			}
 
 			if ( $opts['show_names'] ) {
+				$parts[] = '<span class="mdt-lang-name">' . esc_html( $item['label'] ) . '</span>';
+			}
+			if ( $opts['show_codes'] ) {
+				$src_lang = get_option( 'mdt_source_lang', 'auto' );
+				$parts[] = '<span class="mdt-lang-code">' . esc_html( strtoupper( $src_lang ) ) . '</span>';
+			}
+
+			// Fallback — always show something
+			if ( empty( $parts ) ) {
 				$parts[] = '<span class="mdt-lang-name">' . esc_html( $item['label'] ) . '</span>';
 			}
 		} else {
@@ -197,20 +208,36 @@ class MDT_Widget extends WP_Widget {
 
 	/**
 	 * Build text label for a <option> in dropdown mode.
-	 * <option> cannot contain HTML, so source uses 🌐 and flags use emoji text.
+	 * <option> cannot contain HTML, so source uses 🌐 (if show_flags) and flags use emoji text.
 	 */
 	private static function dropdown_label( $item, $opts ) {
 		if ( $item['is_source'] ) {
-			// Show globe emoji as stand-in for SVG
-			$label = '🌐';
+			$label = '';
+
+			// Show globe emoji only if show_flags is enabled
+			if ( $opts['show_flags'] ) {
+				$label = '🌐';
+			}
 
 			if ( $opts['show_names'] ) {
-				$label .= ' ' . $item['label'];
+				if ( '' !== $label ) {
+					$label .= ' ';
+				}
+				$label .= $item['label'];
 			} elseif ( $opts['show_codes'] ) {
 				// Show source language code (e.g., "RU", "EN", "AUTO")
 				$src_lang = get_option( 'mdt_source_lang', 'auto' );
-				$label .= ' ' . strtoupper( $src_lang );
+				if ( '' !== $label ) {
+					$label .= ' ';
+				}
+				$label .= strtoupper( $src_lang );
 			}
+
+			// Fallback: if nothing was built, show language name
+			if ( '' === $label ) {
+				$label = $item['label'];
+			}
+
 			return $label;
 		}
 
