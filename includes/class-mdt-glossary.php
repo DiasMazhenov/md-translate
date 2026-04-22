@@ -20,9 +20,9 @@ class MDT_Glossary {
 
 		$sql = "CREATE TABLE IF NOT EXISTS {$table} (
 			id             BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-			source_text    VARCHAR(500)  NOT NULL,
+			source_text    TEXT          NOT NULL,
 			target_lang    VARCHAR(10)   NOT NULL,
-			translated     VARCHAR(500)  NOT NULL,
+			translated     TEXT          NOT NULL,
 			case_sensitive TINYINT(1)    NOT NULL DEFAULT 0,
 			whole_word     TINYINT(1)    NOT NULL DEFAULT 1,
 			created_at     DATETIME      NOT NULL,
@@ -32,6 +32,16 @@ class MDT_Glossary {
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		dbDelta( $sql );
+	}
+
+	/**
+	 * Upgrade existing table columns from VARCHAR(500) to TEXT.
+	 * Safe to call on every activation.
+	 */
+	public static function upgrade_table() {
+		global $wpdb;
+		$table = $wpdb->prefix . self::TABLE_NAME;
+		$wpdb->query( "ALTER TABLE {$table} MODIFY source_text TEXT NOT NULL, MODIFY translated TEXT NOT NULL" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 	}
 
 	// ---- CRUD ----
@@ -61,9 +71,9 @@ class MDT_Glossary {
 		$table = $wpdb->prefix . self::TABLE_NAME;
 
 		$row = array(
-			'source_text'    => sanitize_text_field( $data['source_text'] ),
+			'source_text'    => sanitize_textarea_field( $data['source_text'] ),
 			'target_lang'    => sanitize_text_field( $data['target_lang'] ),
-			'translated'     => sanitize_text_field( $data['translated'] ),
+			'translated'     => sanitize_textarea_field( $data['translated'] ),
 			'case_sensitive' => ! empty( $data['case_sensitive'] ) ? 1 : 0,
 			'whole_word'     => ! empty( $data['whole_word'] ) ? 1 : 0,
 			'created_at'     => current_time( 'mysql' ),
@@ -105,8 +115,11 @@ class MDT_Glossary {
 				$flags .= 'i';
 			}
 
-			$source = preg_quote( $entry->source_text, '/' );
-			if ( $entry->whole_word ) {
+			$source    = preg_quote( $entry->source_text, '/' );
+			$is_phrase = str_contains( $entry->source_text, ' ' );
+
+			// Word-boundary only makes sense for single words; phrases match as-is
+			if ( $entry->whole_word && ! $is_phrase ) {
 				$source = '(?<!\w)' . $source . '(?!\w)';
 			}
 

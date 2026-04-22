@@ -164,12 +164,23 @@ class MDT_Frontend {
 
 	/**
 	 * Translate only text nodes in HTML.
-	 * Skips: <script>, <style>, <noscript>, HTML comments,
-	 *        elements marked data-mdt-skip, and all HTML tags.
+	 * Skips: <script>, <style>, <noscript>, HTML comments, all HTML tags,
+	 *        and blocks wrapped in <!-- mdt-skip-start -->...<!-- mdt-skip-end -->.
 	 */
 	private function translate_html_safe( $html, $target_lang ) {
-		$source   = get_option( 'mdt_source_lang', 'auto' );
-		$skip_open = false; // true while inside a skip-block
+		$source = get_option( 'mdt_source_lang', 'auto' );
+
+		// Pre-pass: extract skip blocks (e.g. language switcher) and replace with placeholders
+		$skipped = array();
+		$html = preg_replace_callback(
+			'~<!-- mdt-skip-start -->[\s\S]*?<!-- mdt-skip-end -->~',
+			function ( $m ) use ( &$skipped ) {
+				$key            = "\x02MDT_SKIP_" . count( $skipped ) . "\x03";
+				$skipped[ $key ] = $m[0];
+				return $key;
+			},
+			$html
+		);
 
 		// Single-pass regex: ordered from most specific to most general
 		$result = preg_replace_callback(
@@ -201,7 +212,14 @@ class MDT_Frontend {
 			$html
 		);
 
-		return $result ?? $html;
+		$result = $result ?? $html;
+
+		// Restore skip blocks
+		if ( ! empty( $skipped ) ) {
+			$result = str_replace( array_keys( $skipped ), array_values( $skipped ), $result );
+		}
+
+		return $result;
 	}
 
 	// =========================================================================

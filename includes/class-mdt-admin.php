@@ -100,9 +100,9 @@ class MDT_Admin {
 
 		$data = array(
 			'id'             => absint( $_POST['id'] ?? 0 ),
-			'source_text'    => sanitize_text_field( wp_unslash( $_POST['source_text']    ?? '' ) ),
+			'source_text'    => sanitize_textarea_field( wp_unslash( $_POST['source_text']    ?? '' ) ),
 			'target_lang'    => sanitize_text_field( wp_unslash( $_POST['target_lang']    ?? '' ) ),
-			'translated'     => sanitize_text_field( wp_unslash( $_POST['translated']     ?? '' ) ),
+			'translated'     => sanitize_textarea_field( wp_unslash( $_POST['translated']     ?? '' ) ),
 			'case_sensitive' => ! empty( $_POST['case_sensitive'] ),
 			'whole_word'     => ! empty( $_POST['whole_word'] ),
 		);
@@ -306,7 +306,7 @@ class MDT_Admin {
 		<div class="mdt-card">
 			<h2><?php esc_html_e( 'Glossary — Custom Translation Overrides', 'md-translate' ); ?></h2>
 			<p class="description">
-				<?php esc_html_e( 'Words or phrases listed here will replace the machine-translated version. Applied after translation, per language.', 'md-translate' ); ?>
+				<?php esc_html_e( 'Words, phrases, or full sentences listed here will replace the machine-translated version. Applied after translation, per language.', 'md-translate' ); ?>
 			</p>
 
 			<div class="mdt-glossary-form">
@@ -314,8 +314,8 @@ class MDT_Admin {
 				<input type="hidden" id="mdt-glossary-id" value="0">
 				<table class="form-table mdt-glossary-fields">
 					<tr>
-						<th><?php esc_html_e( 'Source word / phrase', 'md-translate' ); ?><br><small><?php esc_html_e( '(in translated text)', 'md-translate' ); ?></small></th>
-						<td><input type="text" id="mdt-g-source" class="regular-text" placeholder="<?php esc_attr_e( 'e.g. Apple Inc', 'md-translate' ); ?>"></td>
+						<th><?php esc_html_e( 'Source text', 'md-translate' ); ?><br><small><?php esc_html_e( '(as it appears after machine translation)', 'md-translate' ); ?></small></th>
+						<td><textarea id="mdt-g-source" class="regular-text" rows="3" placeholder="<?php esc_attr_e( 'Word, phrase, or full sentence to replace', 'md-translate' ); ?>"></textarea></td>
 					</tr>
 					<tr>
 						<th><?php esc_html_e( 'Language', 'md-translate' ); ?></th>
@@ -333,13 +333,14 @@ class MDT_Admin {
 					</tr>
 					<tr>
 						<th><?php esc_html_e( 'Replace with', 'md-translate' ); ?></th>
-						<td><input type="text" id="mdt-g-translated" class="regular-text" placeholder="<?php esc_attr_e( 'Custom translation', 'md-translate' ); ?>"></td>
+						<td><textarea id="mdt-g-translated" class="regular-text" rows="3" placeholder="<?php esc_attr_e( 'Your custom translation', 'md-translate' ); ?>"></textarea></td>
 					</tr>
 					<tr>
 						<th><?php esc_html_e( 'Options', 'md-translate' ); ?></th>
 						<td>
 							<label><input type="checkbox" id="mdt-g-case"> <?php esc_html_e( 'Case-sensitive', 'md-translate' ); ?></label>&nbsp;&nbsp;
 							<label><input type="checkbox" id="mdt-g-whole" checked> <?php esc_html_e( 'Whole word only', 'md-translate' ); ?></label>
+							<br><small><?php esc_html_e( '"Whole word" is ignored automatically for multi-word phrases and sentences.', 'md-translate' ); ?></small>
 						</td>
 					</tr>
 				</table>

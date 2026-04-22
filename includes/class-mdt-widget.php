@@ -92,14 +92,19 @@ class MDT_Widget extends WP_Widget {
 		$css_vars   = self::build_css_vars();
 		$extra_class = ! empty( $opts['class'] ) ? ' ' . sanitize_html_class( $opts['class'] ) : '';
 
+		// Wrap in skip markers so the output buffer never translates switcher text
 		switch ( $opts['style'] ) {
 			case 'dropdown':
-				return self::render_dropdown( $items, $opts, $css_vars, $extra_class );
+				$html = self::render_dropdown( $items, $opts, $css_vars, $extra_class );
+				break;
 			case 'flags':
-				return self::render_flags( $items, $opts, $css_vars, $extra_class );
+				$html = self::render_flags( $items, $opts, $css_vars, $extra_class );
+				break;
 			default:
-				return self::render_list( $items, $opts, $css_vars, $extra_class );
+				$html = self::render_list( $items, $opts, $css_vars, $extra_class );
 		}
+
+		return '<!-- mdt-skip-start -->' . $html . '<!-- mdt-skip-end -->';
 	}
 
 	// ---- Style renderers ----

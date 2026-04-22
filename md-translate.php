@@ -81,6 +81,7 @@ register_activation_hook( __FILE__, 'mdt_activate' );
 function mdt_activate() {
 	MDT_Cache::create_table();
 	MDT_Glossary::create_table();
+	MDT_Glossary::upgrade_table();
 
 	$defaults = array(
 		'source_lang'          => 'auto',
