@@ -81,7 +81,20 @@ class MDT_Cache {
 
 	public static function flush() {
 		global $wpdb;
-		$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}" . self::TABLE_NAME );
+		$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}" . self::TABLE_NAME ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	}
+
+	/**
+	 * Flush cached translations for a specific target language.
+	 * Called automatically when a glossary entry is saved or deleted.
+	 */
+	public static function flush_by_lang( $target_lang ) {
+		global $wpdb;
+		$wpdb->delete(
+			$wpdb->prefix . self::TABLE_NAME,
+			array( 'target_lang' => sanitize_text_field( $target_lang ) ),
+			array( '%s' )
+		); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 	}
 
 	private static function delete( $key ) {

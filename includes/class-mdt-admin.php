@@ -112,13 +112,27 @@ class MDT_Admin {
 		}
 
 		$id = MDT_Glossary::save( $data );
+
+		// Invalidate cached translations for this language so glossary takes effect immediately
+		MDT_Cache::flush_by_lang( $data['target_lang'] );
+
 		wp_send_json_success( array( 'id' => $id ) );
 	}
 
 	public function ajax_glossary_delete() {
 		check_ajax_referer( 'mdt_admin', 'nonce' );
 		if ( ! current_user_can( 'manage_options' ) ) { wp_send_json_error( 'Forbidden' ); }
-		MDT_Glossary::delete( absint( $_POST['id'] ?? 0 ) );
+
+		$id    = absint( $_POST['id'] ?? 0 );
+		$entry = MDT_Glossary::get( $id );
+
+		MDT_Glossary::delete( $id );
+
+		// Invalidate cache for this language so the removed override stops applying
+		if ( $entry ) {
+			MDT_Cache::flush_by_lang( $entry->target_lang );
+		}
+
 		wp_send_json_success();
 	}
 
