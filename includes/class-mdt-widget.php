@@ -180,7 +180,7 @@ class MDT_Widget extends WP_Widget {
 			}
 			if ( $opts['show_codes'] ) {
 				$src_lang = get_option( 'mdt_source_lang', 'auto' );
-				$parts[] = '<span class="mdt-lang-code">' . esc_html( strtoupper( $src_lang ) ) . '</span>';
+				$parts[] = '<span class="mdt-lang-code">' . esc_html( self::language_code_display( $src_lang ) ) . '</span>';
 			}
 
 			// Fallback — always show something
@@ -195,7 +195,7 @@ class MDT_Widget extends WP_Widget {
 				$parts[] = '<span class="mdt-lang-name">' . esc_html( $item['label'] ) . '</span>';
 			}
 			if ( $opts['show_codes'] && $item['code'] ) {
-				$parts[] = '<span class="mdt-lang-code">' . esc_html( strtoupper( $item['code'] ) ) . '</span>';
+				$parts[] = '<span class="mdt-lang-code">' . esc_html( self::language_code_display( $item['code'] ) ) . '</span>';
 			}
 			// Fallback — always show something
 			if ( empty( $parts ) ) {
@@ -230,7 +230,7 @@ class MDT_Widget extends WP_Widget {
 				if ( '' !== $label ) {
 					$label .= ' ';
 				}
-				$label .= strtoupper( $src_lang );
+				$label .= self::language_code_display( $src_lang );
 			}
 
 			// Fallback: if nothing was built, show language name
@@ -256,7 +256,7 @@ class MDT_Widget extends WP_Widget {
 		if ( $opts['show_names'] ) {
 			$label .= $item['label'];
 		} elseif ( $opts['show_codes'] ) {
-			$label .= strtoupper( $item['code'] );
+			$label .= self::language_code_display( $item['code'] );
 		}
 
 		// Fallback: if all visibility options are off, show language name
@@ -385,7 +385,7 @@ class MDT_Widget extends WP_Widget {
 		$map = array(
 			'af'=>'🇿🇦','sq'=>'🇦🇱','ar'=>'🇸🇦','hy'=>'🇦🇲','az'=>'🇦🇿','eu'=>'🇪🇸',
 			'be'=>'🇧🇾','bn'=>'🇧🇩','bs'=>'🇧🇦','bg'=>'🇧🇬','ca'=>'🇪🇸','zh'=>'🇨🇳',
-			'hr'=>'🇭🇷','cs'=>'🇨🇿','da'=>'🇩🇰','nl'=>'🇳🇱','en'=>'🇬🇧','eo'=>'🏳',
+			'hr'=>'🇭🇷','cs'=>'🇨🇿','da'=>'🇩🇰','nl'=>'🇳🇱','en'=>'🇺🇸','eo'=>'🏳',
 			'et'=>'🇪🇪','fi'=>'🇫🇮','fr'=>'🇫🇷','gl'=>'🇪🇸','ka'=>'🇬🇪','de'=>'🇩🇪',
 			'el'=>'🇬🇷','gu'=>'🇮🇳','ht'=>'🇭🇹','he'=>'🇮🇱','hi'=>'🇮🇳','hu'=>'🇭🇺',
 			'is'=>'🇮🇸','id'=>'🇮🇩','ga'=>'🇮🇪','it'=>'🇮🇹','ja'=>'🇯🇵','kn'=>'🇮🇳',
@@ -397,6 +397,16 @@ class MDT_Widget extends WP_Widget {
 			'vi'=>'🇻🇳','cy'=>'🏴󠁧󠁢󠁷󠁬󠁳󠁿',
 		);
 		return $map[ $code ] ?? '';
+	}
+
+	/**
+	 * Map language code to display code (e.g., 'kk' → 'KZ', others → uppercase).
+	 */
+	private static function language_code_display( $code ) {
+		$map = array(
+			'kk' => 'KZ',  // Kazakh
+		);
+		return $map[ $code ] ?? strtoupper( $code );
 	}
 
 	public static function language_map() {
